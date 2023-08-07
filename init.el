@@ -1,71 +1,84 @@
-(setq inhibit-startup-screen t) ;; maybe I should look for another useful startup screen?
+;; - C-h f function: describe function
+;; - C-h o symbol: describe symbol
+;; - C-h v variable: describe variable
+;;
+;; M-x eval-buffer: reload init.el without saving it
 
-(set-language-environment "UTF-8")
-(set-default-coding-systems 'utf-8-unix)
+;; Performance tweaks for modern machines
+(setq gc-cons-threshold 100000000)
+(setq read-process-outout-max (* 1024 1024))
 
-(menu-bar-mode -1) ;; disable menu bar
-(tool-bar-mode -1) ;; disable tool bar
-(scroll-bar-mode -1) ;; disable scroll bar
+;; Hide UI
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
 
-(global-hl-line-mode) ;; highlight the current line
-(global-display-line-numbers-mode) ;; display line number
+(global-hl-line-mode) ; highlight the current line
+(global-display-line-numbers-mode) ; display line number
 
-(blink-cursor-mode -1) ;; disable cursor blinking
+(blink-cursor-mode -1) ; disable cursor blinking
 
-(global-auto-revert-mode) ;; revert changes in buffer if associated file changed
+;(setq inhibit-startup-screen t) ;; maybe I should look for another useful startup screen?
 
-(electric-pair-mode) ;; close brackets
-(show-paren-mode) ;; highlight matched brackets
-(setq show-paren-style 'expression)
+;(set-language-environment "UTF-8")
+;(set-default-coding-systems 'utf-8-unix)
 
-;;───────────────────── Plugins ─────────────────────
+;(blink-cursor-mode -1) ;; disable cursor blinking
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+;(global-auto-revert-mode) ;; revert changes in buffer if associated file changed
 
-(when (< emacs-major-version 27)
-  (package-initialize))
+;(electric-pair-mode) ;; close brackets
+;(show-paren-mode) ;; highlight matched brackets
+;(setq show-paren-style 'expression)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
+;;;───────────────────── Plugins ─────────────────────
 
-(defun move-key (keymap-from keymap-to key)
-  "Moves key binding from one keymap to another, deleting from the old location. "
-  (define-key keymap-to key (lookup-key keymap-from key))
-  (define-key keymap-from key nil))
+;(require 'package)
+;(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
-;; Evil
-(use-package evil
-  :ensure t
-  :config
-  (evil-mode)
+;(when (< emacs-major-version 27)
+;  (package-initialize))
+
+;(unless (package-installed-p 'use-package)
+;  (package-refresh-contents)
+;  (package-install 'use-package))
+;(require 'use-package)
+
+;(defun move-key (keymap-from keymap-to key)
+;  "Moves key binding from one keymap to another, deleting from the old location. "
+;  (define-key keymap-to key (lookup-key keymap-from key))
+;  (define-key keymap-from key nil))
+
+;;; Evil
+;(use-package evil
+;  :ensure t
+;  :config
+;  (evil-mode)
   
-  (move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
-  (move-key evil-motion-state-map evil-normal-state-map " ")
+;  (move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
+;  (move-key evil-motion-state-map evil-normal-state-map " ")
   
-  (evil-define-key 'normal 'global
-    "j" 'evil-next-visual-line
-    "k" 'evil-previous-visual-line)
+;  (evil-define-key 'normal 'global
+;    "j" 'evil-next-visual-line
+;    "k" 'evil-previous-visual-line)
   
-  (evil-define-key '(normal visual) 'global
-    ";" 'evil-ex
-    ":" 'evil-repeat-find-char))
+;  (evil-define-key '(normal visual) 'global
+;    ";" 'evil-ex
+;    ":" 'evil-repeat-find-char))
 
-;; key-chord
-(use-package key-chord
-  :ensure t
-  :config
-  (key-chord-mode 1)
+;;; key-chord
+;(use-package key-chord
+;  :ensure t
+;  :config
+;  (key-chord-mode 1)
 
-  (key-chord-define evil-normal-state-map ",." 'evil-force-normal-state)
-  (key-chord-define evil-visual-state-map ",." 'evil-change-to-previous-state)
-  (key-chord-define evil-insert-state-map ",." 'evil-normal-state)
-  (key-chord-define evil-replace-state-map ",." 'evil-normal-state))
+;  (key-chord-define evil-normal-state-map ",." 'evil-force-normal-state)
+;  (key-chord-define evil-visual-state-map ",." 'evil-change-to-previous-state)
+;  (key-chord-define evil-insert-state-map ",." 'evil-normal-state)
+;  (key-chord-define evil-replace-state-map ",." 'evil-normal-state))
 
-;; undo-tree
-(use-package undo-tree
-  :ensure t
-  :config
-  (global-undo-tree-mode))
+;;; undo-tree
+;(use-package undo-tree
+;  :ensure t
+;  :config
+;  (global-undo-tree-mode))
