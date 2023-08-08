@@ -6,38 +6,56 @@
 
 ;; Performance tweaks for modern machines
 (setq gc-cons-threshold 100000000)
-(setq read-process-outout-max (* 1024 1024))
+(setq read-process-outout-max (* 1024 1024)) ;; 1mb
 
 ;; Hide UI
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-(global-hl-line-mode) ; highlight the current line
-(global-display-line-numbers-mode) ; display line number
+(global-hl-line-mode) ;; highlight the current line
+(global-display-line-numbers-mode) ;; display line number
 
-(blink-cursor-mode -1) ; disable cursor blinking
+(blink-cursor-mode -1) ;; disable cursor blinking
 
 ;(setq inhibit-startup-screen t) ;; maybe I should look for another useful startup screen?
 
 ;(set-language-environment "UTF-8")
 ;(set-default-coding-systems 'utf-8-unix)
 
-;(blink-cursor-mode -1) ;; disable cursor blinking
+(global-auto-revert-mode t) ;; revert changes in buffer if associated file changed
 
-;(global-auto-revert-mode) ;; revert changes in buffer if associated file changed
+(electric-pair-mode t) ;; close brackets
+(show-paren-mode 1) ;; highlight matched brackets
 
-;(electric-pair-mode) ;; close brackets
-;(show-paren-mode) ;; highlight matched brackets
+(setq-default indent-tabs-mode nil)
+
+(save-place-mode t) ;; remembering the last place you visited in a file
+
+(savehist-mode t)
+
+(recentf-mode t) ;; remembering recent edited file
+
 ;(setq show-paren-style 'expression)
+
+;; Add unique buffer names in the minibuffer where there are many
+;; identical files. This is super useful if you rely on folders for
+;; organization and have lots of files with the same name,
+;; e.g. foo/index.ts and bar/index.ts.
+(require 'uniquify)
+
+
 
 ;;;───────────────────── Plugins ─────────────────────
 
-;(require 'package)
-;(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(require 'package)
 
-;(when (< emacs-major-version 27)
-;  (package-initialize))
+;; Add MELPA, an unofficial (but well-curated) package registry to the
+;; list of accepted package registries. By default Emacs only uses GNU
+;; ELPA and NonGNU ELPA, https://elpa.gnu.org/ and
+;; https://elpa.nongnu.org/ respectively.
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
 
 ;(unless (package-installed-p 'use-package)
 ;  (package-refresh-contents)
