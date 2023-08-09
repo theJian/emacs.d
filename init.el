@@ -1,6 +1,7 @@
 ;; - C-h f function: describe function
 ;; - C-h o symbol: describe symbol
 ;; - C-h v variable: describe variable
+;; - C-h k key: describe key binding
 ;;
 ;; M-x eval-buffer: reload init.el without saving it
 
@@ -54,7 +55,8 @@
 ;; list of accepted package registries. By default Emacs only uses GNU
 ;; ELPA and NonGNU ELPA, https://elpa.gnu.org/ and
 ;; https://elpa.nongnu.org/ respectively.
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
 
 
 ;(unless (package-installed-p 'use-package)
@@ -67,22 +69,25 @@
 ;  (define-key keymap-to key (lookup-key keymap-from key))
 ;  (define-key keymap-from key nil))
 
-;;; Evil
-;(use-package evil
-;  :ensure t
-;  :config
-;  (evil-mode)
-  
-;  (move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
-;  (move-key evil-motion-state-map evil-normal-state-map " ")
-  
-;  (evil-define-key 'normal 'global
-;    "j" 'evil-next-visual-line
-;    "k" 'evil-previous-visual-line)
-  
-;  (evil-define-key '(normal visual) 'global
-;    ";" 'evil-ex
-;    ":" 'evil-repeat-find-char))
+;; Evil
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode 1)
+  (evil-set-leader nil (kbd "SPC"))
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  (evil-global-set-key 'motion ";" 'evil-ex)
+  (evil-global-set-key 'motion ":" 'evil-repeat-find-char))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 
 ;;; key-chord
 ;(use-package key-chord
