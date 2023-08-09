@@ -77,31 +77,16 @@
   (setq evil-want-keybinding nil)
   :config
   (evil-mode 1)
+  (evil-set-undo-system 'undo-redo)
   (evil-set-leader nil (kbd "SPC"))
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
   (evil-global-set-key 'motion ";" 'evil-ex)
-  (evil-global-set-key 'motion ":" 'evil-repeat-find-char))
+  (evil-global-set-key 'motion ":" 'evil-repeat-find-char)
+  (evil-global-set-key 'normal (kbd "<leader>fs") 'save-buffer))
 
 (use-package evil-collection
   :after evil
   :ensure t
   :config
   (evil-collection-init))
-
-;;; key-chord
-;(use-package key-chord
-;  :ensure t
-;  :config
-;  (key-chord-mode 1)
-
-;  (key-chord-define evil-normal-state-map ",." 'evil-force-normal-state)
-;  (key-chord-define evil-visual-state-map ",." 'evil-change-to-previous-state)
-;  (key-chord-define evil-insert-state-map ",." 'evil-normal-state)
-;  (key-chord-define evil-replace-state-map ",." 'evil-normal-state))
-
-;;; undo-tree
-;(use-package undo-tree
-;  :ensure t
-;  :config
-;  (global-undo-tree-mode))
