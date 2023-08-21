@@ -1,8 +1,7 @@
-;; - C-h f function: describe function
-;; - C-h o symbol: describe symbol
-;; - C-h v variable: describe variable
-;; - C-h k key: describe key binding
-;;
+;; M-x describe-function FUNCTION
+;; M-x describe-symbol SYMBOL
+;; M-x describe-variable VARIABLE
+;; M-x describe-key KEY_LIST
 ;; M-x eval-buffer: reload init.el without saving it
 
 ;; Performance tweaks for modern machines
@@ -13,6 +12,9 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+
+(setq visible-bell t
+      ring-bell-function 'ignore)
 
 (global-hl-line-mode) ;; highlight the current line
 (global-display-line-numbers-mode) ;; display line number
@@ -58,16 +60,79 @@
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
 
+;; Unless we've already fetched (and cached) the package archives,
+;; refresh them.
+(unless package-archive-contents
+  (package-refresh-contents))
 
-;(unless (package-installed-p 'use-package)
-;  (package-refresh-contents)
-;  (package-install 'use-package))
-;(require 'use-package)
+;; Add the :vc keyword to use-package, making it easy to install
+;; packages directly from git repositories.
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
 
-;(defun move-key (keymap-from keymap-to key)
-;  "Moves key binding from one keymap to another, deleting from the old location. "
-;  (define-key keymap-to key (lookup-key keymap-from key))
-;  (define-key keymap-from key nil))
+;; Minibuffer completion is essential to your Emacs workflow
+(use-package vertico
+  :ensure t
+  :custom
+  (vertico-cycle t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (completion-styles '(basic substring partial-completion flex))
+  :init
+  (vertico-mode))
+
+;; Improve the accessibility of Emacs documentation by placing
+;; descriptions directly in your minibuffer. Give it a try:
+;; "M-x find-file".
+(use-package marginalia
+  :after vertico
+  :ensure t
+  :init
+  (marginalia-mode))
+
+;; Adds intellisense-style code completion at point that works great
+;; with LSP via Eglot.
+(use-package corfu
+  :ensure t
+  :init
+  (global-corfu-mode)
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.2)
+  (corfu-auto-prefix 1)
+  (completion-styles '(basic)))
+
+;; Adds LSP support. Note that you must have the respective LSP
+;; server installed on your machine to use it with Eglot. e.g.
+;; rust-analyzer to use Eglot with `rust-mode'.
+(use-package eglot
+  :ensure t
+  :bind (("s-<mouse-1>" . eglot-find-implementation)
+         ("C-c ." . eglot-code-action-quickfix))
+  ;; Add your programming modes here to automatically start Eglot,
+  ;; assuming you have the respective LSP server installed.
+  :hook ((go-mode . eglot-ensure)
+         (web-mode . eglot-ensure)
+         (rust-mode . eglot-ensure))
+  :config
+  ;; You can configure additional LSP servers by modifying
+  ;; `eglot-server-programs'. The following tells eglot to use TypeScript
+  ;; language server when working in `web-mode'.
+  (add-to-list 'eglot-server-programs
+               '(web-mode . ("typescript-language-server" "--stdio"))))
+
+;; Add extra context to Emacs documentation to help make it easier to
+;; search and understand. This configuration uses the keybindings 
+;; recommended by the package author.
+(use-package helpful
+  :ensure t
+  :bind (("C-h f" . #'helpful-callable)
+         ("C-h v" . #'helpful-variable)
+         ("C-h k" . #'helpful-key)
+         ("C-c C-d" . #'helpful-at-point)
+         ("C-h F" . #'helpful-function)
+         ("C-h C" . #'helpful-command)))
 
 ;; Evil
 (use-package evil
@@ -83,10 +148,54 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
   (evil-global-set-key 'motion ";" 'evil-ex)
   (evil-global-set-key 'motion ":" 'evil-repeat-find-char)
-  (evil-global-set-key 'normal (kbd "<leader>fs") 'save-buffer))
+  (evil-global-set-key 'normal (kbd "<leader>fs") 'save-buffer)
+  (evil-global-set-key 'motion "gh" 'evil-first-non-blank)
+  (evil-global-set-key 'motion "gl" 'evil-last-non-blank)
+
+  ;; window motions
+  (evil-global-set-key 'motion "\C-h" 'evil-window-left)
+  (evil-global-set-key 'motion "\C-j" 'evil-window-down)
+  (evil-global-set-key 'motion "\C-k" 'evil-window-up)
+  (evil-global-set-key 'motion "\C-l" 'evil-window-right)
+  (evil-global-set-key 'motion (kbd "<leader>h") 'evil-window-split)
+  (evil-global-set-key 'motion (kbd "<leader>v") 'evil-window-vsplit))
 
 (use-package evil-collection
   :after evil
   :ensure t
   :config
   (evil-collection-init))
+
+;; An extremely feature-rich git client. Activate it with "C-c g".
+(use-package magit
+  :ensure t
+  :bind (("C-c g" . magit-status)))
+
+;; TypeScript, JS, and JSX/TSX support.
+(use-package web-mode
+  :ensure t
+  :mode (("\\.ts\\'" . web-mode)
+         ("\\.js\\'" . web-mode)
+         ("\\.mjs\\'" . web-mode)
+         ("\\.tsx\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
+  :custom
+  (web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+  (web-mode-code-indent-offset 2)
+  (web-mode-css-indent-offset 2)
+  (web-mode-markup-indent-offset 2)
+  (web-mode-enable-auto-quoting nil))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(helpful vertico vc-use-package modus-themes marginalia evil-collection corfu)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
