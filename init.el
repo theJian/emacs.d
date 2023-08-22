@@ -99,7 +99,7 @@
   (global-corfu-mode)
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0.2)
+  (corfu-auto-delay 0)
   (corfu-auto-prefix 1)
   (completion-styles '(basic)))
 
@@ -107,7 +107,7 @@
 ;; server installed on your machine to use it with Eglot. e.g.
 ;; rust-analyzer to use Eglot with `rust-mode'.
 (use-package eglot
-  :ensure t
+  :ensure nil
   :bind (("s-<mouse-1>" . eglot-find-implementation)
          ("C-c ." . eglot-code-action-quickfix))
   ;; Add your programming modes here to automatically start Eglot,
