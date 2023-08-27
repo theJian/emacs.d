@@ -13,6 +13,9 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
+;; Set the font. height = px * 100
+(set-face-attribute 'default nil :font "IntelOne Mono" :height 120)
+
 (setq visible-bell t
       ring-bell-function 'ignore)
 
@@ -35,9 +38,12 @@
 
 (save-place-mode t) ;; remembering the last place you visited in a file
 
-(savehist-mode t)
+(savehist-mode t) ;; Save history in minibuffer to keep recent commands easily accessible
 
 (recentf-mode t) ;; remembering recent edited file
+
+;; Display line numbers only when in programming modes
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 ;(setq show-paren-style 'expression)
 
@@ -47,7 +53,21 @@
 ;; e.g. foo/index.ts and bar/index.ts.
 (require 'uniquify)
 
-
+(setq uniquify-buffer-name-style 'forward
+      window-resize-pixelwise t
+      frame-resize-pixelwise t
+      load-prefer-newer t
+      backup-by-copying t
+      ;; Backups are placed into your Emacs directory, e.g. ~/.config/emacs/backups
+      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+      ;; I'll add an extra note here since user customizations are important.
+      ;; Emacs actually offers a UI-based customization menu, "M-x customize".
+      ;; You can use this menu to change variable values across Emacs. By default,
+      ;; changing a variable will write to your init.el automatically, mixing
+      ;; your hand-written Emacs Lisp with automatically-generated Lisp from the
+      ;; customize menu. The following setting instead writes customizations to a
+      ;; separate file, custom.el, to keep your init.el clean.
+      custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 ;;;───────────────────── Plugins ─────────────────────
 
@@ -108,6 +128,8 @@
 ;; rust-analyzer to use Eglot with `rust-mode'.
 (use-package eglot
   :ensure nil
+  :init 
+  (setq eglot-events-buffer-size 0)
   :bind (("s-<mouse-1>" . eglot-find-implementation)
          ("C-c ." . eglot-code-action-quickfix))
   ;; Add your programming modes here to automatically start Eglot,
@@ -185,17 +207,3 @@
   (web-mode-css-indent-offset 2)
   (web-mode-markup-indent-offset 2)
   (web-mode-enable-auto-quoting nil))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(helpful vertico vc-use-package modus-themes marginalia evil-collection corfu)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
